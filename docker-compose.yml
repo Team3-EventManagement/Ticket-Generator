@@ -20,7 +20,7 @@ services:
     build: .
     container_name: ticket_service_app
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - MONGO_URL=mongodb://mongodb:27017
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
