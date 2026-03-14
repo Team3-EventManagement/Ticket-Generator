@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class TicketResponse(BaseModel):
@@ -8,3 +8,5 @@ class TicketResponse(BaseModel):
     user_id: str
     qr_code: str
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

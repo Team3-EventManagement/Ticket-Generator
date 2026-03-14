@@ -1,13 +1,17 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:6.0
+  postgres:
+    image: postgres:15
     container_name: ticket_info_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: ticket_db
     ports:
-      - "27018:27017"
+      - "5432:5432"
     volumes:
-      - ticket_info_db_data:/data/db
+      - ticket_info_db_data:/var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -22,10 +26,10 @@ services:
     ports:
       - "8001:8000"
     environment:
-      - MONGO_URL=mongodb://mongodb:27017
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@postgres:5432/ticket_db
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
     depends_on:
-      - mongodb
+      - postgres
       - rabbitmq
     volumes:
       - ./qr_codes:/service/qr_codes

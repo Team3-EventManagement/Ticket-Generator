@@ -1,20 +1,22 @@
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.orm import declarative_base
 
-class Database:
-    client: AsyncIOMotorClient = None
-    db = None
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgrespassword@localhost:5432/ticket_db")
 
-db_instance = Database()
+engine = create_async_engine(DATABASE_URL, echo=True)
+AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+Base = declarative_base()
 
 async def init_db():
-    mongo_url = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-    db_instance.client = AsyncIOMotorClient(mongo_url)
-    db_instance.db = db_instance.client.ticket_db
+    async with engine.begin() as conn:
+        # Create all tables (in production use Alembic)
+        await conn.run_sync(Base.metadata.create_all)
 
 async def close_db():
-    if db_instance.client:
-        db_instance.client.close()
+    await engine.dispose()
 
-def get_db():
-    return db_instance.db
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
