@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: ticket_info_db
+    ports:
+      - "27018:27017"
+    volumes:
+      - ticket_info_db_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ticket_info_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  ticket-service:
+    build: .
+    container_name: ticket_service_app
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./qr_codes:/service/qr_codes
+
+volumes:
+  ticket_info_db_data:
