@@ -10,9 +10,9 @@ async def process_message(message: aio_pika.abc.AbstractIncomingMessage):
             body = json.loads(message.body.decode())
             print(f"Received message: {body}")
             
-            booking_id = body.get("booking_id")
-            event_id = body.get("event_id")
-            user_id = body.get("user_id")
+            booking_id = str(body.get("booking_id")) if body.get("booking_id") is not None else None
+            event_id = str(body.get("event_id")) if body.get("event_id") is not None else None
+            user_id = str(body.get("user_id")) if body.get("user_id") is not None else None
             
             if booking_id and event_id and user_id:
                 await generate_ticket(booking_id, event_id, user_id)

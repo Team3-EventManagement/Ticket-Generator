@@ -6,9 +6,9 @@ from datetime import datetime
 from app.database import AsyncSessionLocal
 from app.models import Ticket
 
-QR_CODE_DIR = "qr_codes"
+QR_CODE_DIR = os.getenv("QR_CODE_DIR", "/service/qr_codes")
 if not os.path.exists(QR_CODE_DIR):
-    os.makedirs(QR_CODE_DIR)
+    os.makedirs(QR_CODE_DIR, exist_ok=True)
 
 async def generate_ticket(booking_id: str, event_id: str, user_id: str):
     ticket_id = f"TICKET-{str(uuid.uuid4())[:8].upper()}"
